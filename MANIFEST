@@ -1,0 +1,6 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/Kwiki-Attachments.t
+lib/Kwiki/Attachments.pm
