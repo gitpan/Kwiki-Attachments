@@ -1,6 +1,22 @@
-Changes
+blib/arch/auto/Kwiki/Attachments/.exists
+blib/lib/auto/Kwiki/Attachments/.exists
+blib/lib/Kwiki/.exists
+blib/lib/Kwiki/Attachments.pm
+blib/man3/.exists
+blib/man3/Kwiki::Attachments.3pm
+inc/Module/Install.pm
+inc/Module/Install/Base.pm
+inc/Module/Install/Can.pm
+inc/Module/Install/Fetch.pm
+inc/Module/Install/Makefile.pm
+inc/Module/Install/Metadata.pm
+inc/Module/Install/Win32.pm
+inc/Module/Install/WriteAll.pm
+lib/Kwiki/Attachments.pm
+Makefile
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
+META.yml
+pm_to_blib
 README
 t/Kwiki-Attachments.t
-lib/Kwiki/Attachments.pm

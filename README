@@ -1,4 +1,4 @@
-Kwiki-Attachments version 0.10
+Kwiki-Attachments version 0.11
 ==============================
 
 NAME
@@ -12,8 +12,12 @@ SYNOPSIS
 
 DESCRIPTION
 
-   This module gives a Kwiki wiki the ability to upload and manage file 
+   This module gives a Kwiki wiki the ability to upload, store and manage file 
    attachments on any page.
+
+   Depending on the configuration of your web server, you may need to add
+   an .htaccess file to your <wiki>/plugin/attachments directory containing
+   the directive "Allow from all".
 
 INSTALLATION
 
@@ -32,7 +36,9 @@ COPYRIGHT AND LICENCE
 
    Copyright (C) 2005 by Sue Spence
 
+   This module is based almost entirely on work by
+   Eric Lowry <eric@clubyo.com> and Brian Ingerson <INGY@cpan.org>
+
    This library is free software; you can redistribute it and/or modify
    it under the same terms as Perl itself.
-
 
