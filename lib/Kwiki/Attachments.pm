@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Kwiki::Plugin '-Base';
 use Kwiki::Installer '-base';
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 const class_id => 'attachments';
 const class_title => 'File Attachments';
