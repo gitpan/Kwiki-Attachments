@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Kwiki::Plugin '-Base';
 use Kwiki::Installer '-base';
-our $VERSION = '0.12';
+our $VERSION = '0.15';
 
 const class_id => 'attachments';
 const class_title => 'File Attachments';
@@ -41,25 +41,30 @@ sub attachments_upload {
     $self->display_msg("");
     my $page_id = $self->pages->current_id;
     my $skip_like = $self->config->attachments_skip;
-    my $client_file = my $file = $self->cgi->uploaded_file;
+    my $client_file = my $file = CGI::param('uploaded_file');
     $file =~ s/.*[\/\\](.*)/$1/;
-    $file =~ tr/a-zA-Z0-9./_/cs;
-    if ($file =~ /$skip_like/i) {
-        $self->display_msg("The selected file, $client_file, 
-                           was not uploaded because its name matches the 
-                           pattern of file names excluded by this wiki.");
+    $file =~ tr/a-zA-Z0-9.&+-/_/cs;
+    unless ($file){
+        $self->display_msg("Error: No filename returned!");
     }
     else {
-        my $newfile = io->catfile($self->plugin_directory, 
-	                          $page_id, 
-				  $file);
-        local $/;
-        my $fh = CGI::upload('uploaded_file');
+       if ($file =~ /$skip_like/i) {
+           $self->display_msg("The selected file, $client_file, 
+                              was not uploaded because its name matches the 
+                              pattern of file names excluded by this wiki.");
+       }
+       else {
+           my $newfile = io->catfile($self->plugin_directory, 
+                                     $page_id, 
+                                     $file);
+           local $/;
+           my $fh = CGI::upload('uploaded_file');
 
-        if ( $fh ) {
-    	    binmode($fh);
-	    $newfile->assert->print(<$fh>);
-        }
+           if ( $fh ) {
+               binmode($fh);
+               $newfile->assert->print(<$fh>);
+           } 
+       }
     }
     $self->get_attachments( $page_id );
     $self->render_screen;
@@ -303,7 +308,8 @@ File Attachments For:
 <br />
 <form  method="post" 
        action="[% script_name %]" 
-       enctype="multipart/form-data">
+       enctype="multipart/form-data"
+       target="none">
 <input type="hidden" 
        name="action" 
        value="attachments_upload">

@@ -4,3 +4,8 @@ Revision history for Perl extension Kwiki::Attachments.
 	- original version; created by h2xs 1.23 with options
 		-AX Kwiki::Attachments
 
+0.15  Mon Apr 18
+      - Fixed missing cgi parameter 'uploaded_file'.
+      - Changed filename filter for uploaded_file so that '-' is
+        not changed to '_'.
+
