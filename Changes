@@ -9,3 +9,4 @@ Revision history for Perl extension Kwiki::Attachments.
       - Changed filename filter for uploaded_file so that '-' is
         not changed to '_'.
 
+0.16  Tue Apr 19

@@ -1,9 +1,9 @@
-Kwiki-Attachments version 0.12
+Kwiki-Attachments version 0.16
 ==============================
 
 NAME
 
-   Kwiki::Attachments - Kwiki Page Attachments Plugin
+   Kwiki::Attachments - Kwiki File Attachments Plugin
 
 SYNOPSIS
 
@@ -13,11 +13,8 @@ SYNOPSIS
 DESCRIPTION
 
    This module gives a Kwiki wiki the ability to upload, store and manage file 
-   attachments on any page.
-
-   Depending on the configuration of your web server, you may need to add
-   an .htaccess file to your <wiki>/plugin/attachments directory containing
-   the directive "Allow from all".
+   attachments on any page. Thumbnails will be created for supported file
+   types if Imager or Image::Magick is installed.
 
 INSTALLATION
 
@@ -38,6 +35,9 @@ COPYRIGHT AND LICENCE
 
    This module is based almost entirely on work by
    Eric Lowry <eric@clubyo.com> and Brian Ingerson <INGY@cpan.org>
+
+   Kwiki::Attachments::Inline
+   Kwiki:Attachments::Link
 
    This library is free software; you can redistribute it and/or modify
    it under the same terms as Perl itself.
