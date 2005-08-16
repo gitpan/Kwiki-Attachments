@@ -1,12 +1,13 @@
 Revision history for Perl extension Kwiki::Attachments.
 
-0.01  Tue Mar 15 17:15:39 2005
-	- original version; created by h2xs 1.23 with options
-		-AX Kwiki::Attachments
-
 0.15  Mon Apr 18
       - Fixed missing cgi parameter 'uploaded_file'.
       - Changed filename filter for uploaded_file so that '-' is
         not changed to '_'.
 
-0.16  Tue Apr 19
+0.16  Mon Aug 16 2005
+      Added thumbnail support if Imager or Image::Magick is installed.
+      Includes a wafl directive {thumb:[page/]filename}.
+
+0.17  Tue Aug 17 2005
+      - Amended pod in Attachments.pm

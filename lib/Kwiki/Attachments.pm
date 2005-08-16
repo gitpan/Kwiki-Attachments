@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Kwiki::Plugin '-Base';
 use Kwiki::Installer '-base';
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 const class_id => 'attachments';
 const class_title => 'File Attachments';
@@ -293,10 +293,10 @@ Run 'kwiki -add Kwiki::Attachments'
 =head1 DESCRIPTION
 
 This module gives a Kwiki wiki the ability to upload, store and manage file
-attachments on any page. If you have image creation modules such as Imager,
-Image::Magick, or Image::GD::Thumbnail installed, then a thumbnail will be
-created for every supported image file type that is uploaded. Thumbnails are 
-displayed on the attachments page.
+attachments on any page. If you have an image creation module such as Imager
+or Image::Magick installed, then a thumbnail will be created for every 
+supported image file type that is uploaded. Thumbnails are displayed on the 
+attachments page.
 
 This module also provides 3 WAFL directives which can be used to link to or display attachments in a kwiki page.
 
