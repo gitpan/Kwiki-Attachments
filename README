@@ -14,7 +14,8 @@ DESCRIPTION
 
    This module gives a Kwiki wiki the ability to upload, store and manage file 
    attachments on any page. Thumbnails will be created for supported file
-   types if Imager or Image::Magick is installed.
+   types if Imager or Image::Magick is installed. For more information, read the
+   module POD.
 
 INSTALLATION
 
@@ -35,9 +36,6 @@ COPYRIGHT AND LICENCE
 
    This module is based almost entirely on work by
    Eric Lowry <eric@clubyo.com> and Brian Ingerson <INGY@cpan.org>
-
-   Kwiki::Attachments::Inline
-   Kwiki:Attachments::Link
 
    This library is free software; you can redistribute it and/or modify
    it under the same terms as Perl itself.

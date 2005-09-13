@@ -3,7 +3,8 @@ use strict;
 use warnings;
 use Kwiki::Plugin '-Base';
 use Kwiki::Installer '-base';
-our $VERSION = '0.17';
+use File::Basename;
+our $VERSION = '0.18';
 
 const class_id => 'attachments';
 const class_title => 'File Attachments';
@@ -34,7 +35,7 @@ sub register {
 }
 
 sub update_metadata {
-   # 'touch' page metadata 
+   # Updates the modification time of the page.
    my $page = $self->pages->current;
    $page->metadata->update->store;
 }
@@ -44,12 +45,11 @@ sub attachments {
     $self->render_screen();
 }
 
-
 sub attachments_upload {
    my $page_id = $self->pages->current_id;
    my $skip_like = $self->config->attachments_skip;
-   my $client_file = my $file = CGI::param('uploaded_file');
-   $file =~ s/.*[\/\\](.*)/$1/;  # get base filename
+   my $client_file = CGI::param('uploaded_file');
+   my $file = basename($client_file);
    $file =~ tr/a-zA-Z0-9.&+-/_/cs;
    unless ($file){
        $self->display_msg("Please specify a file to upload.");
@@ -70,7 +70,9 @@ sub attachments_upload {
             $newfile->assert->print(<$fh>);
             $newfile->close();
             $self->update_metadata();
-            $self->make_thumbnail($newfile);
+            if ($self->config->make_thumbnails !~ /off/i) {
+               $self->make_thumbnail($newfile);
+            }
          } 
       }
    }
@@ -79,32 +81,34 @@ sub attachments_upload {
 }
 
 sub make_thumbnail {
-   use File::Basename;
 
    my $file = shift;
    my ($fname, $fpath, $ftype) = fileparse($file, qr(\..*$));
    my $thumb = io->catfile($fpath, "thumb_$fname$ftype");
+   my $override = ($self->config->im_override =~ /on/i) ? 0 : 1;
    
-   if (eval { require Imager }) {
-      my $found = 0;
-      if ($ftype =~ /jpg/i) {
-         $found = 1;
-      } else {
-         for (keys %Imager::format) {
-            if ($ftype =~ /$_/oi) {
-               $found = 1;
-               last;
-            }
+   if (eval { require Imager } && !$override) {
+      # Imager.pm naively (IMO) depends on (and believes) file
+      # extensions in order to determine the file type. 
+      my $supported = 0;
+      $ftype = 'jpeg' if $ftype =~ /jpg/i; 
+      for (keys %Imager::formats) {
+         if ($ftype =~ /$_/i) {
+            $supported = 1;
+            last;
          }
       }
-      if ($found) {
+      if ($supported) {
          my $image = Imager->new;
          return unless ref($image);
-         $image->read(file=>$file);
-         my $thumb_img = $image->scale(xpixels=>80,ypixels=>80);
-         $thumb_img->write(file=>$thumb);
+         if ($image->read(file=>$file)) {
+            my $thumb_img = $image->scale(xpixels=>80,ypixels=>80);
+            $thumb_img->write(file=>$thumb);
+         }
       }
    } elsif (eval { require Image::Magick }) {
+      # Image::Magick does the right thing with image files regardless
+      # of whether the file extension looks like ".jpg", ".png" etc.
       my $image = Image::Magick->new;
       return unless ref($image);
       if (!$image->Read($file)) {
@@ -115,6 +119,7 @@ sub make_thumbnail {
          }
       }
    }
+   return;
 }
 
 sub attachments_delete {
@@ -140,7 +145,7 @@ sub attachments_delete {
 sub get_attachments {
     my $page_id = shift;
     my $skip_like = $self->config->attachments_skip;
-    my @files;
+#    my @files;
     my $page_dir = $self->plugin_directory . '/' . $page_id;
     my $count = 0;
     @{$self->{files}} = ();
@@ -292,26 +297,60 @@ Run 'kwiki -add Kwiki::Attachments'
 
 =head1 DESCRIPTION
 
-This module gives a Kwiki wiki the ability to upload, store and manage file
-attachments on any page. If you have an image creation module such as Imager
-or Image::Magick installed, then a thumbnail will be created for every 
-supported image file type that is uploaded. Thumbnails are displayed on the 
-attachments page.
+=head3 B<General>
 
-This module also provides 3 WAFL directives which can be used to link to or display attachments in a kwiki page.
+Kwiki::Attachments gives a Kwiki wiki the ability to upload, store and manage
+file attachments on any page. By default, if you have an image creation module 
+such as Imager or Image::Magick installed, then a thumbnail will be created for 
+every supported image file type that is uploaded. Thumbnails are displayed on 
+the attachments page, and can also be displayed on wiki pages via the wafl
+directives described in the next paragraph. The thumbnail files have "thumb_"
+prepended to the original filename and are not displayed separately  in the 
+attachment page or widget. For this reason, you cannot upload files beginning
+with "thumb_".
+
+=head3 B<WAFL>
+
+This module provides 3 wafl tags which can be used to link to or display
+attachments in a Kwiki page.
 
 =over 4
 
 =item *
-{file:[page/]filename} creates a link to attachment "filename".
+C<{file:[page/]filename}> creates a link to attachment I<filename>.
 
 =item *
-{img:[page/]filename} displays attachment "filename".
+C<{img:[page/]filename}> displays attachment I<filename>.
 
 =item *
-{thumb:[page/]filename} displays the thumbnail for attachment "filename".
+C<{thumb:[page/]filename}> displays the thumbnail for attachment I<filename>.
 
 =back
+
+=head3 B<Configuration Options> 
+
+[kwiki_base_dir]/config/attachments.yaml
+
+=over 4
+
+=item * 
+attachments_skip: [regular_expression]
+
+Kwiki::Attachments may be configured to reject the upload of files with names
+matched by the given regular expression.  By default, it is set to reject files
+beginning with "thumb_" or "." and those ending with "~" or ".bak".
+
+=item *  make_thumbnails: [on|off]
+
+This flag controls whether thumbnails are created from uploaded image files.
+It is set to 'on' by default. 
+
+=item *  im_override: [on|off]
+
+If both Imager.pm and Image::Magick.pm are available, Kwiki::Attachments uses
+Imager, unless im_override is set to 'on'. This parameter has no effect if only
+one of the two image manipulation modules is installed. It is set to 'off' by
+default.
 
 =head1 AUTHOR
 
@@ -331,9 +370,19 @@ See http://www.perl.com/perl/misc/Artistic.html
 
 =cut
 __config/attachments.yaml__
-attachments_dir: attachments
+# Kwiki::Attachments configuration options
+
+# attachments_skip: regex describing file names to be excluded
 attachments_skip: (^\.)|(^thumb_)|(~$)|(\.bak$)
-thumbnail_module: Imager
+
+# make_thumbnails: on|off
+make_thumbnails: on
+
+# 'im_override' overrides the preference for Imager for 
+# thumbnail creation if both Imager & Image::Magick are installed.
+# im_override: on|off
+im_override: off
+
 __css/attachments.css__
 table.attachments {
     color: #999;
