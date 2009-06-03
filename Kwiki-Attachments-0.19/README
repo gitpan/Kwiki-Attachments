@@ -1,4 +1,4 @@
-Kwiki-Attachments version 0.16
+Kwiki-Attachments version 0.19
 ==============================
 
 NAME
@@ -32,7 +32,7 @@ DEPENDENCIES
 
 COPYRIGHT AND LICENCE
 
-   Copyright (C) 2005 by Sue Spence
+   Copyright (C) 2005-2009 by Sue Spence
 
    This module is based almost entirely on work by
    Eric Lowry <eric@clubyo.com> and Brian Ingerson <INGY@cpan.org>
