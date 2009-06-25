@@ -4,7 +4,7 @@ use warnings;
 use Kwiki::Plugin '-Base';
 use Kwiki::Installer '-base';
 use File::Basename;
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 const class_id => 'attachments';
 const class_title => 'File Attachments';
